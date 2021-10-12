@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'voltage_screen.dart';
+import 'current_screen.dart';
+import 'resistance_screen.dart';
+import 'data_screen.dart';
 
 class ChooseMeasure extends StatefulWidget {
   @override
@@ -39,7 +43,10 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
                         borderRadius: BorderRadius.circular(10)),
                     textStyle:
                         TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
-                onPressed: () {}),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => VoltageScreen()));
+                }),
             Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
             ElevatedButton(
                 child: Text("Current"),
@@ -51,7 +58,10 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
                         borderRadius: BorderRadius.circular(10)),
                     textStyle:
                         TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
-                onPressed: () {}),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => CurrentScreen()));
+                }),
             Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
             ElevatedButton(
                 child: Text("Resistance"),
@@ -63,7 +73,12 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
                         borderRadius: BorderRadius.circular(10)),
                     textStyle:
                         TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
-                onPressed: () {}),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ResistanceScreen()));
+                }),
             Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
             Divider(
                 thickness: 1.5,
@@ -89,7 +104,10 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
                         borderRadius: BorderRadius.circular(10)),
                     textStyle:
                         TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
-                onPressed: () {}),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => DataScreen()));
+                }),
             Padding(padding: EdgeInsets.fromLTRB(0, 40, 0, 0))
           ],
         ),
