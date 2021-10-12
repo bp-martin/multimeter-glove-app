@@ -18,7 +18,7 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 5)),
+            Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 10)),
             Text(
               "MULTIMETER GLOVE",
               style: TextStyle(
