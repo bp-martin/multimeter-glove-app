@@ -18,6 +18,7 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 5)),
             Text(
               "MULTIMETER GLOVE",
               style: TextStyle(
@@ -79,14 +80,12 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
                       MaterialPageRoute(
                           builder: (context) => ResistanceScreen()));
                 }),
-            Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
             Divider(
                 thickness: 1.5,
                 color: Color(0xffbe1e1e),
-                height: 100,
+                height: 130,
                 indent: 30,
                 endIndent: 30),
-            Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
             Text("Check your saved data:",
                 style: TextStyle(
                     fontFamily: 'Montserrat',
