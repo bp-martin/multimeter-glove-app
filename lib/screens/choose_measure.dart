@@ -36,11 +36,11 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
         setState(() {
           if (message == "connected") {
             connected = true;
-          } else if (message.substring(0, 6) == "{'voltage") {
+          } else if (message.substring(0, 6) == "{'voltageVal") {
             message = message.replaceAll(RegExp("'"), '"');
-            Map<String, dynamic> jsondata = json.decode(message);
+            var jsondata = jsonDecode(message);
             setState(() {
-              voltage = jsondata["voltageValue"];
+              voltage = jsondata["charactersToString(vtr)"];
             });
           }
         });
@@ -54,15 +54,6 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
       });
     } catch (_) {
       print("Error on connecting to websocket.");
-    }
-
-    Future<void> sendcmd(String cmd) async {
-      if (connected == true) {
-        channel.sink.add(cmd);
-      } else {
-        channelconnect();
-        print("Web Socket is not connected");
-      }
     }
   }
 

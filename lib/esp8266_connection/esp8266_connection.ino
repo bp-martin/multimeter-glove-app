@@ -1,14 +1,16 @@
 #include <WebSocketsServer.h>
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-#include <SoftwareSerial.h>
 
-const char *ssid = "Connectify-me";
-const char *pass = "kadajuk4";
+const char *ssid = "MultimeterApp";
+const char *pass = "12345678";
 
 String json;
-int voltage = A0;
-int voltageValue = 0;
+
+const int analogInPin = A0;
+float voltageValue = 0;
+float vout;
+
 char vtr[10];
 
 WebSocketsServer webSocket = WebSocketsServer(81);
@@ -59,7 +61,7 @@ String charactersToString(char* chr) {
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   Serial.println("Connecting to WiFi");
 
@@ -75,7 +77,11 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   webSocket.loop();
-  voltageValue = analogRead(voltage);
+  voltageValue = analogRead(analogInPin);
+  vout = voltageValue * (1.29 /1023.0);
+
+  Serial.print("sensor = ");
+  Serial.println(voltageValue);
 
   delay(1000);
 
@@ -84,9 +90,9 @@ void loop() {
     Serial.println(F("Failed to read voltage value"));
     return;
   } else {
-    sprintf(vtr, "%.2f", voltageValue);
+    sprintf(vtr, "%.2f", vout);
 
-    json = "{'voltage':'" + charactersToString(vtr) + "'}";
+    json = "{'voltageVal':'" + charactersToString(vtr) + "'}";
     Serial.println(json);
     webSocket.broadcastTXT(json);
   }
