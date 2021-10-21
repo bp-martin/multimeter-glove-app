@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'voltage_screen.dart';
 import 'current_screen.dart';
 import 'resistance_screen.dart';
 import 'data_screen.dart';
-import 'package:web_socket_channel/io.dart';
 
 class ChooseMeasure extends StatefulWidget {
   @override
@@ -12,51 +10,6 @@ class ChooseMeasure extends StatefulWidget {
 }
 
 class _ChooseMeasureState extends State<ChooseMeasure> {
-  String voltage = '';
-
-  late IOWebSocketChannel channel;
-  bool connected = false;
-
-  @override
-  void initState() {
-    connected = false;
-    voltage = "0";
-    Future.delayed(Duration.zero, () async {
-      channelconnect();
-    });
-
-    super.initState();
-  }
-
-  channelconnect() {
-    try {
-      channel = IOWebSocketChannel.connect("ws://192.168.0.1:81");
-      channel.stream.listen((message) {
-        print(message);
-        setState(() {
-          if (message == "connected") {
-            connected = true;
-          } else if (message.substring(0, 6) == "{'voltageVal") {
-            message = message.replaceAll(RegExp("'"), '"');
-            var jsondata = jsonDecode(message);
-            setState(() {
-              voltage = jsondata["charactersToString(vtr)"];
-            });
-          }
-        });
-      }, onDone: () {
-        print("Web Socket is closed");
-        setState(() {
-          connected = false;
-        });
-      }, onError: (error) {
-        print(error.toString());
-      });
-    } catch (_) {
-      print("Error on connecting to websocket.");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,7 +107,6 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => DataScreen()));
                 }),
-            Text("Voltage: $voltage"),
             Padding(padding: EdgeInsets.fromLTRB(0, 40, 0, 0))
           ],
         ),
