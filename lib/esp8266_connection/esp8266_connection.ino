@@ -10,6 +10,12 @@ String json;
 const int analogInPin = A0;
 float voltageValue = 0;
 float vout;
+/*float resistanceVout;
+float vd;
+float r3 = 220;
+float unknownResistor;
+float var1;
+float var2;*/
 
 char vtr[10];
 
@@ -78,8 +84,17 @@ void loop() {
   // put your main code here, to run repeatedly:
   webSocket.loop();
   voltageValue = analogRead(analogInPin);
-  vout = voltageValue * (5 /1023.0);
+  vout = voltageValue * (12.4 /1023.0);
 
+  /*resistanceVout = analogRead(analogInPin);
+  vd = 1.65 - resistanceVout;
+  var1 = r3 * 1.65;
+  var2 = var1 / vd;
+  unknownResistor = var2 - r3;
+
+  Serial.print("resistance = ");
+  Serial.println(unknownResistor);*/
+  
   Serial.print("sensor = ");
   Serial.println(voltageValue);
 
