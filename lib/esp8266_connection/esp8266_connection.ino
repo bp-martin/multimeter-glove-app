@@ -78,7 +78,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   webSocket.loop();
   voltageValue = analogRead(analogInPin);
-  vout = voltageValue * (1.29 /1023.0);
+  vout = voltageValue * (5 /1023.0);
 
   Serial.print("sensor = ");
   Serial.println(voltageValue);
@@ -90,7 +90,7 @@ void loop() {
     Serial.println(F("Failed to read voltage value"));
     return;
   } else {
-    sprintf(vtr, "%.2f", vout);
+    sprintf(vtr, "%.4f", vout);
 
     json = "{'voltageVal':'" + charactersToString(vtr) + "'}";
     Serial.println(json);
