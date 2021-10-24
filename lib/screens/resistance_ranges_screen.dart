@@ -1,33 +1,41 @@
 import 'package:flutter/material.dart';
-import 'voltage_screen.dart';
-import 'current_screen.dart';
-import 'resistance_ranges_screen.dart';
-import 'data_screen.dart';
+import 'resistance_screen_r1.dart';
+import 'resistance_screen_r2.dart';
+import 'resistance_screen_r3.dart';
+import 'resistance_screen_r4.dart';
+import 'resistance_screen_r5.dart';
 
-class ChooseMeasure extends StatefulWidget {
+class ChooseResistanceRange extends StatefulWidget {
   @override
-  _ChooseMeasureState createState() => _ChooseMeasureState();
+  _ChooseResistanceRangeState createState() => _ChooseResistanceRangeState();
 }
 
-class _ChooseMeasureState extends State<ChooseMeasure> {
+class _ChooseResistanceRangeState extends State<ChooseResistanceRange> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xfff3f3f3),
+      appBar: AppBar(
+          backgroundColor: Color(0xfff3f3f3),
+          elevation: 0,
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new,
+                  color: Color(0xffbe1e1e), size: 18),
+              onPressed: () => Navigator.of(context).pop())),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 10)),
             Text(
-              "MULTIMETER GLOVE",
+              "Resistance Ranges",
               style: TextStyle(
                   fontFamily: 'Bebas Neue',
                   fontSize: 32,
                   color: Color(0xffbe1e1e)),
             ),
             Padding(padding: EdgeInsets.fromLTRB(0, 70, 0, 0)),
-            Text("What you want to measure?",
+            Text("Choose the range for your resistance:",
                 style: TextStyle(
                     fontFamily: 'Montserrat',
                     fontWeight: FontWeight.w600,
@@ -35,37 +43,7 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
                     color: Color(0xff000000))),
             Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 0)),
             ElevatedButton(
-                child: Text("Voltage"),
-                style: ElevatedButton.styleFrom(
-                    primary: Color(0xffbe1e1e),
-                    onPrimary: Color(0xffffffff),
-                    fixedSize: Size(144, 32),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    textStyle:
-                        TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => VoltageScreen()));
-                }),
-            Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
-            ElevatedButton(
-                child: Text("Current"),
-                style: ElevatedButton.styleFrom(
-                    primary: Color(0xffbe1e1e),
-                    onPrimary: Color(0xffffffff),
-                    fixedSize: Size(144, 32),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    textStyle:
-                        TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => CurrentScreen()));
-                }),
-            Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
-            ElevatedButton(
-                child: Text("Resistance"),
+                child: Text("220Ω"),
                 style: ElevatedButton.styleFrom(
                     primary: Color(0xffbe1e1e),
                     onPrimary: Color(0xffffffff),
@@ -78,23 +56,11 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ChooseResistanceRange()));
+                          builder: (context) => ResistanceScreenR1()));
                 }),
-            Divider(
-                thickness: 1.5,
-                color: Color(0xffbe1e1e),
-                height: 130,
-                indent: 30,
-                endIndent: 30),
-            Text("Check your saved data:",
-                style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                    color: Color(0xff000000))),
             Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
             ElevatedButton(
-                child: Text("Data"),
+                child: Text("2kΩ"),
                 style: ElevatedButton.styleFrom(
                     primary: Color(0xffbe1e1e),
                     onPrimary: Color(0xffffffff),
@@ -104,10 +70,63 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
                     textStyle:
                         TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => DataScreen()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ResistanceScreenR2()));
                 }),
-            Padding(padding: EdgeInsets.fromLTRB(0, 40, 0, 0))
+            Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
+            ElevatedButton(
+                child: Text("20kΩ"),
+                style: ElevatedButton.styleFrom(
+                    primary: Color(0xffbe1e1e),
+                    onPrimary: Color(0xffffffff),
+                    fixedSize: Size(144, 32),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    textStyle:
+                        TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ResistanceScreenR3()));
+                }),
+            Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
+            ElevatedButton(
+                child: Text("200kΩ"),
+                style: ElevatedButton.styleFrom(
+                    primary: Color(0xffbe1e1e),
+                    onPrimary: Color(0xffffffff),
+                    fixedSize: Size(144, 32),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    textStyle:
+                        TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ResistanceScreenR4()));
+                }),
+            Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
+            ElevatedButton(
+                child: Text("2MΩ"),
+                style: ElevatedButton.styleFrom(
+                    primary: Color(0xffbe1e1e),
+                    onPrimary: Color(0xffffffff),
+                    fixedSize: Size(144, 32),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    textStyle:
+                        TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ResistanceScreenR5()));
+                }),
+            Padding(padding: EdgeInsets.fromLTRB(0, 160, 0, 0))
           ],
         ),
       ),

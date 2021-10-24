@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'choose_measure.dart';
 
-class ResistanceScreen extends StatefulWidget {
+class ResistanceScreenR3 extends StatefulWidget {
   @override
-  _ResistanceScreenState createState() => _ResistanceScreenState();
+  _ResistanceScreenR3State createState() => _ResistanceScreenR3State();
 }
 
-class _ResistanceScreenState extends State<ResistanceScreen> {
+class _ResistanceScreenR3State extends State<ResistanceScreenR3> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +22,7 @@ class _ResistanceScreenState extends State<ResistanceScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text("Resistance  (Ω)",
+            Text("Resistance  (20kΩ)",
                 style: TextStyle(
                     fontFamily: 'Bebas Neue',
                     fontSize: 36,
