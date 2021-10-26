@@ -2,22 +2,24 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 
+// Creating a WiFi red to connect with the Flutter App
 const char *ssid = "MultimeterApp";
 const char *pass = "12345678";
 
+// Package that will be send to the Flutter App
 String json;
 
+// To read the analogue input into the code
 const int analogInPin = A0;
-float voltageValue = 0;
-float vout;
-/*float resistanceVout;
-float vd;
-float r3 = 220;
-float unknownResistor;
-float var1;
-float var2;*/
+float input;
 
+// Voltage Variables
+float voltageValue;
 char vtr[10];
+
+// Resistance Variables
+float resistanceValue; 
+char rtr[10];
 
 WebSocketsServer webSocket = WebSocketsServer(81);
 
@@ -66,7 +68,8 @@ String charactersToString(char* chr) {
 }
 
 void setup() {
-  // put your setup code here, to run once:
+  
+  // Creating the connection of WebSocket; this code runs only once
   Serial.begin(115200);
 
   Serial.println("Connecting to WiFi");
@@ -81,33 +84,32 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+
+  // Operations and send json packages to flutter app
   webSocket.loop();
-  voltageValue = analogRead(analogInPin);
-  vout = voltageValue * (12.4 /1023.0);
-
-  /*resistanceVout = analogRead(analogInPin);
-  vd = 1.65 - resistanceVout;
-  var1 = r3 * 1.65;
-  var2 = var1 / vd;
-  unknownResistor = var2 - r3;
-
-  Serial.print("resistance = ");
-  Serial.println(unknownResistor);*/
+  input = analogRead(analogInPin);
   
-  Serial.print("sensor = ");
-  Serial.println(voltageValue);
+  Serial.print("Sensor from Analogue Pin = ");
+  Serial.println(input);
 
+  // Voltage Calculations
+  voltageValue = input * (12.4 / 1023.0);
+  
+  // Resistance Calculations
+  voltageOutput = input * (3.3 / 1023.0);
+  resistanceValue = (voltageOutput * 2000) / (3.3 - voltageOutput);
+  
   delay(1000);
 
-  if(isnan(voltageValue))
+  if(isnan(input))
   {
     Serial.println(F("Failed to read voltage value"));
     return;
   } else {
-    sprintf(vtr, "%.4f", vout);
+    sprintf(vtr, "%.4f", voltageValue);
+    sprintf(rtr, "%.4f", resistanceValue);
 
-    json = "{'voltageVal':'" + charactersToString(vtr) + "'}";
+    json = "{'Voltage Value':'" + charactersToString(vtr) + "','Resistance Value':'" + charactersToString(rtr) + "'}";
     Serial.println(json);
     webSocket.broadcastTXT(json);
   }
