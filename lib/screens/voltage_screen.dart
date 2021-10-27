@@ -35,11 +35,11 @@ class _VoltageScreenState extends State<VoltageScreen> {
         setState(() {
           if (message == "connected") {
             connected = true;
-          } else if (message.substring(0, 12) == "{'voltageVal") {
+          } else if (message.substring(0, 14) == "{'voltageValue") {
             message = message.replaceAll(RegExp("'"), '"');
             var jsondata = json.decode(message);
             setState(() {
-              voltage = jsondata["voltageVal"];
+              voltage = jsondata["voltageValue"];
               voltageDisplay = double.parse(voltage);
 
               if (voltageDisplay > 0.0001) {
