@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'choose_measure.dart';
+import 'dart:convert';
+import 'package:web_socket_channel/io.dart';
 
 class ResistanceScreenR4 extends StatefulWidget {
   @override
@@ -7,6 +9,66 @@ class ResistanceScreenR4 extends StatefulWidget {
 }
 
 class _ResistanceScreenR4State extends State<ResistanceScreenR4> {
+  String range200000 = '';
+  double resistanceDisplay = 0;
+
+  late IOWebSocketChannel channel;
+  bool connected = false;
+  bool saveData = false;
+
+  @override
+  void initState() {
+    connected = false;
+    range200000 = "0";
+    Future.delayed(Duration.zero, () async {
+      channelconnect();
+    });
+
+    super.initState();
+  }
+
+  channelconnect() {
+    try {
+      channel = IOWebSocketChannel.connect("ws://192.168.0.1:81");
+      channel.stream.listen((message) {
+        print(message);
+        setState(() {
+          if (message == "connected") {
+            connected = true;
+          } else if (message.substring(0, 14) == "{'voltageValue") {
+            message = message.replaceAll(RegExp("'"), '"');
+            var jsondata = json.decode(message);
+            setState(() {
+              range200000 = jsondata["res200000"];
+              resistanceDisplay = double.parse(range200000);
+
+              if (resistanceDisplay > 0.0001) {
+                saveData = true;
+              } else {
+                saveData = false;
+              }
+            });
+          }
+
+          if (range200000 == "0") {
+            saveData = false;
+          } else {
+            saveData = true;
+          }
+        });
+      }, onDone: () {
+        print("Web Socket is closed");
+        setState(() {
+          connected = false;
+        });
+      }, onError: (error) {
+        print(error.toString());
+      });
+    } catch (_) {
+      print("Error on connecting to websocket.");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

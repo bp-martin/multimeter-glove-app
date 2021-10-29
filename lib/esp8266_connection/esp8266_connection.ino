@@ -3,9 +3,9 @@
 #include <ESP8266WiFi.h>
 
 //GPIO Pins for selecting signal values
-#define MUX_C D1
-#define MUX_B D2
-#define MUX_A D3
+#define MUX_C D0
+#define MUX_B D1
+#define MUX_A D2
 
 // Creating a WiFi red to connect with the Flutter App
 const char *ssid = "MultimeterApp";
@@ -25,7 +25,17 @@ char vtr[10];
 // Resistance Variables
 float voltageOutput;
 float resistanceValue;
-char rtr[10];
+float res220;
+char r1tr[10];
+float res2000;
+char r2tr[10];
+float res20000;
+char r3tr[10];
+float res200000;
+char r4tr[10];
+float res2000000;
+char r5tr[10];
+
 
 // First bracket: Row ; Second bracket: Column
 float ranges[3][5] = {{220,2000,20000,200000,2000000}, {0,0,0,0,0}, {0,0,0,0,0}};
@@ -106,13 +116,13 @@ String charactersToString(char* chr) {
   return rval;
 }
 
-//float rangeFinder() {
-//  float minValue;
-//
-//  for (int i = 0; i < 5; i++) {
-//    
-//  }
-//}
+float rangeFinder() {
+  float minValue;
+
+  for (int i = 0; i < 5; i++) {
+    
+  }
+}
 
 void setup() {
 
@@ -140,15 +150,27 @@ void loop() {
   // Operations and send json packages to flutter app
   webSocket.loop();
 
-  // Voltage Calculations
-  voltageValue = input * (12.4 / 1023.0);
+  input = analogRead(analogInPin);
+  Serial.print("Sensor: ");
+  Serial.println(input);
 
-//  Serial.print("voltage at vd: ");
-//  Serial.println(voltageOutput);
+  // Voltage Calculations
+  //voltageValue = input * (15.60 / 1023.0);
+
+  voltageValue = input * (3.3 / 1023.0);
+
+  Serial.print("voltage: ");
+  Serial.println(voltageValue);
+
+  //input = analogRead(analogInPin);
+  //float voutcurrent = input * (5 / 1023.0);
+  //Serial.print("Voltage: ");
+  //Serial.println(voutcurrent);
+  
   
   delay(1000);
 
-  for(int i = 0; i < 5; i++) {
+  /*for(int i = 0; i < 5; i++) {
     int range = ranges[0][i];
     switch(range){
       // Case for the 220 ohms range
@@ -156,9 +178,6 @@ void loop() {
         
         // Selecting the range on MUX
         resistanceRange220();
-
-        // Analog read from pin A0
-        input = analogRead(analogInPin);
         
         // Voltage at node D from Wheatstone Bridge
         voltageOutput = input * (3.3 / 1023.0);
@@ -168,6 +187,7 @@ void loop() {
 
         // Value of R4 calculated
         resistanceValue = (voltageOutput * 220) / (3.3 - voltageOutput);
+        res220 = resistanceValue;
 
         Serial.print("This is 220 ohms range: ");
         Serial.println(resistanceValue);
@@ -184,7 +204,7 @@ void loop() {
         resistanceRange2000();
 
         // Analog read from pin A0
-        input = analogRead(analogInPin);
+        //input = analogRead(analogInPin);
         
         // Voltage at node D from Wheatstone Bridge
         voltageOutput = input * (3.3 / 1023.0);
@@ -194,6 +214,7 @@ void loop() {
 
         // Value of R4 calculated
         resistanceValue = (voltageOutput * 2000) / (3.3 - voltageOutput);
+        res2000 = resistanceValue;
 
         Serial.print("This is 2,000 ohms range: ");
         Serial.println(resistanceValue);
@@ -210,7 +231,7 @@ void loop() {
         resistanceRange20000();
 
         // Analog read from pin A0
-        input = analogRead(analogInPin);
+        //input = analogRead(analogInPin);
         
         // Voltage at node D from Wheatstone Bridge
         voltageOutput = input * (3.3 / 1023.0);
@@ -220,7 +241,8 @@ void loop() {
 
         // Value of R4 calculated
         resistanceValue = (voltageOutput * 20000) / (3.3 - voltageOutput);
-
+        res20000 = resistanceValue;
+        
         Serial.print("This is 20,000 ohms range: ");
         Serial.println(resistanceValue);
         Serial.print("Voltage at Node D for 20,000 ohms range: ");
@@ -236,7 +258,7 @@ void loop() {
         resistanceRange200000();
 
         // Analog read from pin A0
-        input = analogRead(analogInPin);
+        //input = analogRead(analogInPin);
         
         // Voltage at node D from Wheatstone Bridge
         voltageOutput = input * (3.3 / 1023.0);
@@ -246,6 +268,7 @@ void loop() {
 
         // Value of R4 calculated
         resistanceValue = (voltageOutput * 200000) / (3.3 - voltageOutput);
+        res200000 = resistanceValue;
 
         Serial.print("This is 200,000 ohms range: ");
         Serial.println(resistanceValue);
@@ -262,7 +285,7 @@ void loop() {
         resistanceRange2000000();
 
         // Analog read from pin A0
-        input = analogRead(analogInPin);
+        //input = analogRead(analogInPin);
         
         // Voltage at node D from Wheatstone Bridge
         voltageOutput = input * (3.3 / 1023.0);
@@ -272,6 +295,7 @@ void loop() {
 
         // Value of R4 calculated
         resistanceValue = (voltageOutput * 2000000) / (3.3 - voltageOutput);
+        res2000000 = resistanceValue;
 
         Serial.print("This is 2,000,000 ohms range: ");
         Serial.println(resistanceValue);
@@ -285,18 +309,23 @@ void loop() {
         //Serial.print("Out of Range!!");
         break;
     }
-  }
+  }*/
   
   if(isnan(input))
   {
     Serial.println(F("Failed to read voltage value"));
     return;
   } else {
-    sprintf(vtr, "%.4f", voltageValue);
-    sprintf(rtr, "%.4f", resistanceValue);
+    sprintf(vtr, "%.2f", voltageValue);
+    sprintf(r1tr, "%.2f", res220);
+    sprintf(r2tr, "%.2f", res2000);
+    sprintf(r3tr, "%.2f", res20000);
+    sprintf(r4tr, "%.2f", res200000);
+    sprintf(r5tr, "%.2f", res2000000);
+    
 
-    json = "{'voltageValue':'" + charactersToString(vtr) + "', 'resistanceValue':'" + charactersToString(rtr) + "'}";
-    //Serial.println(json);
+    json = "{'voltageValue':'" + charactersToString(vtr) + "','range220':'" + charactersToString(r1tr) + "','range2000':'" + charactersToString(r2tr) + "','range20000':'" + charactersToString(r3tr) + "','range200000':'" + charactersToString(r4tr) + "','range2000000':'" + charactersToString(r5tr) + "'}";
+    Serial.println(json);
     webSocket.broadcastTXT(json);
   }
 }
