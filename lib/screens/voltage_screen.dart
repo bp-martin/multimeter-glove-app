@@ -1,74 +1,15 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'choose_measure.dart';
-import 'package:web_socket_channel/io.dart';
 
 class VoltageScreen extends StatefulWidget {
+  final double voltageVal;
+  VoltageScreen({this.voltageVal});
+
   @override
   _VoltageScreenState createState() => _VoltageScreenState();
 }
 
 class _VoltageScreenState extends State<VoltageScreen> {
-  String voltage = '';
-  double voltageDisplay = 0;
-
-  late IOWebSocketChannel channel;
-  bool connected = false;
-  bool saveData = false;
-
-  @override
-  void initState() {
-    connected = false;
-    voltage = "0";
-    Future.delayed(Duration.zero, () async {
-      channelconnect();
-    });
-
-    super.initState();
-  }
-
-  channelconnect() {
-    try {
-      channel = IOWebSocketChannel.connect("ws://192.168.0.1:81");
-      channel.stream.listen((message) {
-        print(message);
-        setState(() {
-          if (message == "connected") {
-            connected = true;
-          } else if (message.substring(0, 14) == "{'voltageValue") {
-            message = message.replaceAll(RegExp("'"), '"');
-            var jsondata = json.decode(message);
-            setState(() {
-              voltage = jsondata["voltageValue"];
-              voltageDisplay = double.parse(voltage);
-
-              if (voltageDisplay > 0.0001) {
-                saveData = true;
-              } else {
-                saveData = false;
-              }
-            });
-          }
-
-          if (voltage == "0") {
-            saveData = false;
-          } else {
-            saveData = true;
-          }
-        });
-      }, onDone: () {
-        print("Web Socket is closed");
-        setState(() {
-          connected = false;
-        });
-      }, onError: (error) {
-        print(error.toString());
-      });
-    } catch (_) {
-      print("Error on connecting to websocket.");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,7 +47,7 @@ class _VoltageScreenState extends State<VoltageScreen> {
                           children: <Widget>[
                             Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
                             // Placeholder
-                            Text("$voltageDisplay",
+                            Text("$voltage",
                                 style: TextStyle(
                                     fontFamily: 'Noto Sans',
                                     fontSize: 72,
@@ -138,8 +79,8 @@ class _VoltageScreenState extends State<VoltageScreen> {
             ElevatedButton(
                 child: Text("Save Data"),
                 style: ElevatedButton.styleFrom(
-                    primary: saveData ? Color(0xffe2e2e2) : Color(0xffbe1e1e),
-                    onPrimary: saveData ? Color(0xff000000) : Color(0xffffffff),
+                    primary: Color(0xffe2e2e2),
+                    onPrimary: Color(0xff000000),
                     fixedSize: Size(144, 32),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
