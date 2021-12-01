@@ -7,6 +7,10 @@
 #define MUX_B D1
 #define MUX_A D2
 
+#define RMUX_C D5
+#define RMUX_B D6
+#define RMUX_A D7
+
 // Creating a WiFi red to connect with the Flutter App
 const char *ssid = "MultimeterApp";
 const char *pass = "12345678";
@@ -36,40 +40,61 @@ char r4tr[10];
 float res2000000;
 char r5tr[10];
 
+float currentValue;
 
 // First bracket: Row ; Second bracket: Column
-float ranges[3][5] = {{220,2000,20000,200000,2000000}, {0,0,0,0,0}, {0,0,0,0,0}};
+float ranges[2][5] = {{220,2000,20000,200000,2000000}, {0,0,0,0,0}};
 
 WebSocketsServer webSocket = WebSocketsServer(81);
 
 void resistanceRange220() {
     digitalWrite(MUX_C, LOW);
-    digitalWrite(MUX_B, LOW);
+    digitalWrite(MUX_B, HIGH);
     digitalWrite(MUX_A, LOW);
+    
+    digitalWrite(RMUX_C, LOW);
+    digitalWrite(RMUX_B, LOW);
+    digitalWrite(RMUX_A, LOW);
 }
 
 void resistanceRange2000() {
     digitalWrite(MUX_C, LOW);
-    digitalWrite(MUX_B, LOW);
-    digitalWrite(MUX_A, HIGH);
+    digitalWrite(MUX_B, HIGH);
+    digitalWrite(MUX_A, LOW);
+    
+    digitalWrite(RMUX_C, LOW);
+    digitalWrite(RMUX_B, LOW);
+    digitalWrite(RMUX_A, HIGH);
 }
 
 void resistanceRange20000() {
     digitalWrite(MUX_C, LOW);
     digitalWrite(MUX_B, HIGH);
     digitalWrite(MUX_A, LOW);
+    
+    digitalWrite(RMUX_C, LOW);
+    digitalWrite(RMUX_B, HIGH);
+    digitalWrite(RMUX_A, LOW);
 }
 
 void resistanceRange200000() {
     digitalWrite(MUX_C, LOW);
     digitalWrite(MUX_B, HIGH);
-    digitalWrite(MUX_A, HIGH);
+    digitalWrite(MUX_A, LOW);
+    
+    digitalWrite(RMUX_C, LOW);
+    digitalWrite(RMUX_B, HIGH);
+    digitalWrite(RMUX_A, HIGH);
 }
 
 void resistanceRange2000000() {
-    digitalWrite(MUX_C, HIGH);
-    digitalWrite(MUX_B, LOW);
+    digitalWrite(MUX_C, LOW);
+    digitalWrite(MUX_B, HIGH);
     digitalWrite(MUX_A, LOW);
+    
+    digitalWrite(RMUX_C, HIGH);
+    digitalWrite(RMUX_B, LOW);
+    digitalWrite(RMUX_A, LOW);
 }
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
@@ -116,20 +141,16 @@ String charactersToString(char* chr) {
   return rval;
 }
 
-float rangeFinder() {
-  float minValue;
-
-  for (int i = 0; i < 5; i++) {
-    
-  }
-}
-
 void setup() {
 
   // Defining GPIO pins for Resistance MUX
   pinMode(MUX_C, OUTPUT);
   pinMode(MUX_B, OUTPUT);
   pinMode(MUX_A, OUTPUT);
+
+  pinMode(RMUX_C, OUTPUT);
+  pinMode(RMUX_B, OUTPUT);
+  pinMode(RMUX_A, OUTPUT);
   
   // Creating the connection of WebSocket; this code runs only once
   Serial.begin(115200);
@@ -150,23 +171,21 @@ void loop() {
   // Operations and send json packages to flutter app
   webSocket.loop();
 
+  digitalWrite(MUX_C, LOW);
+  digitalWrite(MUX_B, HIGH);
+  digitalWrite(MUX_A, LOW);
+
   input = analogRead(analogInPin);
   Serial.print("Sensor: ");
   Serial.println(input);
 
   // Voltage Calculations
-  //voltageValue = input * (15.60 / 1023.0);
-
   voltageValue = input * (3.3 / 1023.0);
 
-  Serial.print("voltage: ");
-  Serial.println(voltageValue);
+  voltageValue = (voltageValue * 1) / 3.3;
 
-  //input = analogRead(analogInPin);
-  //float voutcurrent = input * (5 / 1023.0);
-  //Serial.print("Voltage: ");
-  //Serial.println(voutcurrent);
-  
+  Serial.print("current: ");
+  Serial.println(voltageValue);
   
   delay(1000);
 
@@ -316,7 +335,7 @@ void loop() {
     Serial.println(F("Failed to read voltage value"));
     return;
   } else {
-    sprintf(vtr, "%.2f", voltageValue);
+    sprintf(vtr, "%.3f", voltageValue);
     sprintf(r1tr, "%.2f", res220);
     sprintf(r2tr, "%.2f", res2000);
     sprintf(r3tr, "%.2f", res20000);
