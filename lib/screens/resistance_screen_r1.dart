@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'choose_measure.dart';
 import 'package:web_socket_channel/io.dart';
+import 'data.dart';
 
 class ResistanceScreenR1 extends StatefulWidget {
   @override
@@ -130,7 +131,9 @@ class _ResistanceScreenR1State extends State<ResistanceScreenR1> {
                         borderRadius: BorderRadius.circular(10)),
                     textStyle:
                         TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
-                onPressed: () {}),
+                onPressed: () {
+                  origin.resistanceR1 = resistanceR1Display;
+                }),
             ElevatedButton(
                 child: Text("Done"),
                 style: ElevatedButton.styleFrom(

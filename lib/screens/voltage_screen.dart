@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'choose_measure.dart';
 import 'package:web_socket_channel/io.dart';
+import 'data.dart';
 
 class VoltageScreen extends StatefulWidget {
   @override
@@ -10,7 +11,6 @@ class VoltageScreen extends StatefulWidget {
 class _VoltageScreenState extends State<VoltageScreen> {
   String voltage = '';
   double voltageDisplay = 0;
-  double savedVoltage = 0;
 
   late IOWebSocketChannel channel;
   bool connected = false;
@@ -131,7 +131,9 @@ class _VoltageScreenState extends State<VoltageScreen> {
                         borderRadius: BorderRadius.circular(10)),
                     textStyle:
                         TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
-                onPressed: () {}),
+                onPressed: () {
+                  origin.savedVoltage = voltageDisplay;
+                }),
             ElevatedButton(
                 child: Text("Done"),
                 style: ElevatedButton.styleFrom(

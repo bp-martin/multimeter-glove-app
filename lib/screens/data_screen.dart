@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'choose_measure.dart';
+import 'data.dart';
 
 class DataScreen extends StatefulWidget {
   @override
@@ -49,7 +50,7 @@ class _DataScreenState extends State<DataScreen> {
                               fontSize: 18,
                               color: Color(0xff000000))),
                       Spacer(flex: 6),
-                      Text("10 V",
+                      Text("${origin.savedVoltage} V",
                           style: TextStyle(
                               fontFamily: 'Montserrat',
                               fontWeight: FontWeight.w600,
@@ -73,7 +74,7 @@ class _DataScreenState extends State<DataScreen> {
                               fontSize: 18,
                               color: Color(0xff000000))),
                       Spacer(flex: 6),
-                      Text("10.00 A",
+                      Text("${origin.savedCurrent} A",
                           style: TextStyle(
                               fontFamily: 'Montserrat',
                               fontWeight: FontWeight.w600,
@@ -97,7 +98,7 @@ class _DataScreenState extends State<DataScreen> {
                               fontSize: 18,
                               color: Color(0xff000000))),
                       Spacer(flex: 3),
-                      Text("10.00 Ω",
+                      Text("${origin.resistanceR1} Ω",
                           style: TextStyle(
                               fontFamily: 'Montserrat',
                               fontWeight: FontWeight.w600,
@@ -121,7 +122,7 @@ class _DataScreenState extends State<DataScreen> {
                               fontSize: 18,
                               color: Color(0xff000000))),
                       Spacer(flex: 4),
-                      Text("10.00 Ω",
+                      Text("${origin.resistanceR2} Ω",
                           style: TextStyle(
                               fontFamily: 'Montserrat',
                               fontWeight: FontWeight.w600,
@@ -145,7 +146,7 @@ class _DataScreenState extends State<DataScreen> {
                               fontSize: 18,
                               color: Color(0xff000000))),
                       Spacer(flex: 3),
-                      Text("10.00 Ω",
+                      Text("${origin.resistanceR3} Ω",
                           style: TextStyle(
                               fontFamily: 'Montserrat',
                               fontWeight: FontWeight.w600,
@@ -169,7 +170,7 @@ class _DataScreenState extends State<DataScreen> {
                               fontSize: 18,
                               color: Color(0xff000000))),
                       Spacer(flex: 3),
-                      Text("10.00 Ω",
+                      Text("${origin.resistanceR4} Ω",
                           style: TextStyle(
                               fontFamily: 'Montserrat',
                               fontWeight: FontWeight.w600,
@@ -193,7 +194,7 @@ class _DataScreenState extends State<DataScreen> {
                               fontSize: 18,
                               color: Color(0xff000000))),
                       Spacer(flex: 3),
-                      Text("10.00 Ω",
+                      Text("${origin.resistanceR5} Ω",
                           style: TextStyle(
                               fontFamily: 'Montserrat',
                               fontWeight: FontWeight.w600,

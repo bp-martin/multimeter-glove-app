@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'choose_measure.dart';
 import 'package:web_socket_channel/io.dart';
+import 'data.dart';
 
 class CurrentScreen extends StatefulWidget {
   @override
@@ -130,7 +131,9 @@ class _CurrentScreenState extends State<CurrentScreen> {
                         borderRadius: BorderRadius.circular(10)),
                     textStyle:
                         TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
-                onPressed: () {}),
+                onPressed: () {
+                  origin.savedCurrent = currentDisplay;
+                }),
             ElevatedButton(
                 child: Text("Done"),
                 style: ElevatedButton.styleFrom(

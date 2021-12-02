@@ -3,6 +3,7 @@ import 'voltage_screen.dart';
 import 'current_screen.dart';
 import 'resistance_ranges_screen.dart';
 import 'data_screen.dart';
+import 'data.dart';
 
 class ChooseMeasure extends StatefulWidget {
   @override
