@@ -1,104 +1,264 @@
-#include <WebSocketsServer.h>
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include <WebSocketsServer.h>
 
-//GPIO Pins for selecting signal values
+// GPIO Pins for Props and Output MUX Pins
 #define MUX_C D0
 #define MUX_B D1
 #define MUX_A D2
 
+// GPIO Pins for Resistance Ranges MUX Pins
 #define RMUX_C D5
 #define RMUX_B D6
 #define RMUX_A D7
 
-// Creating a WiFi red to connect with the Flutter App
+// Creating a WiFi connection for the Flutter App
 const char *ssid = "MultimeterApp";
 const char *pass = "12345678";
 
-// Package that will be send to the Flutter App
-String json;
+ESP8266WebServer server(80);
+WebSocketsServer webSocket = WebSocketsServer(81);
 
 // To read the analogue input into the code
 const int analogInPin = A0;
 float input;
 
-// Voltage Variables
-float voltageValue;
-char vtr[10];
+// Global Variables
+float voltageValue;         // Voltage Value
+float voltageOutput;        // Voltage at Node D for Resistance Circuit
+float resistanceValue;      // Resistance Value
+float currentValue;         // Current Value
+String operation = "";      // Button Selector
 
-// Resistance Variables
-float voltageOutput;
-float resistanceValue;
-float res220;
-char r1tr[10];
-float res2000;
-char r2tr[10];
-float res20000;
-char r3tr[10];
-float res200000;
-char r4tr[10];
-float res2000000;
-char r5tr[10];
+// Function for Voltage Circuit
+void voltageFunction() {
+  digitalWrite(MUX_C, LOW);
+  digitalWrite(MUX_B, LOW);
+  digitalWrite(MUX_A, LOW);
 
-float currentValue;
+  input = analogRead(analogInPin);
+  Serial.print("Sensor: ");
+  Serial.println(input);
 
-// First bracket: Row ; Second bracket: Column
-float ranges[2][5] = {{220,2000,20000,200000,2000000}, {0,0,0,0,0}};
+  // Voltage Calculation
+  voltageValue = (input * (3.3 / 1023.0)) * 6.8;
 
-WebSocketsServer webSocket = WebSocketsServer(81);
+  Serial.print("Voltage: ");
+  Serial.println(voltageValue);
 
-void resistanceRange220() {
-    digitalWrite(MUX_C, LOW);
-    digitalWrite(MUX_B, HIGH);
-    digitalWrite(MUX_A, LOW);
-    
-    digitalWrite(RMUX_C, LOW);
-    digitalWrite(RMUX_B, LOW);
-    digitalWrite(RMUX_A, LOW);
+  delay(700);
+
+  // Conversion from float to string
+  String payload = String(voltageValue, 2);
+
+  // Send the data to Flutter App
+  webSocket.broadcastTXT(payload);
 }
 
-void resistanceRange2000() {
-    digitalWrite(MUX_C, LOW);
-    digitalWrite(MUX_B, HIGH);
-    digitalWrite(MUX_A, LOW);
-    
-    digitalWrite(RMUX_C, LOW);
-    digitalWrite(RMUX_B, LOW);
-    digitalWrite(RMUX_A, HIGH);
+// Function for Current Circuit
+void currentFunction() {
+  digitalWrite(MUX_C, LOW);
+  digitalWrite(MUX_B, HIGH);
+  digitalWrite(MUX_A, LOW);
+
+  input = analogRead(analogInPin);
+  Serial.print("Sensor: ");
+  Serial.println(input);
+
+  // Current Calculation
+  currentValue = ((input * (3.3 / 1023.0)) * 1) / 3.3;
+
+  Serial.print("Current: ");
+  Serial.println(currentValue);
+
+  delay(700);
+
+  // Conversion from float to string
+  String payload = String(currentValue, 3);
+
+  // Send the data to Flutter App
+  webSocket.broadcastTXT(payload);
 }
 
-void resistanceRange20000() {
-    digitalWrite(MUX_C, LOW);
-    digitalWrite(MUX_B, HIGH);
-    digitalWrite(MUX_A, LOW);
-    
-    digitalWrite(RMUX_C, LOW);
-    digitalWrite(RMUX_B, HIGH);
-    digitalWrite(RMUX_A, LOW);
+// Function for Resistance Circuit: Range of 220 Ohms
+void resistancer1Function() {
+  digitalWrite(MUX_C, LOW);
+  digitalWrite(MUX_B, LOW);
+  digitalWrite(MUX_A, HIGH);
+
+  digitalWrite(RMUX_C, LOW);
+  digitalWrite(RMUX_B, LOW);
+  digitalWrite(RMUX_A, LOW);
+
+  input = analogRead(analogInPin);
+
+  // Voltage at node D from Wheatstone Bridge
+  voltageOutput = input * (3.3 / 1023.0);
+
+  // Value of R4 calculated
+  resistanceValue = (voltageOutput * 275) / (3.3 - voltageOutput);
+  
+  Serial.print("Missing Resistor Value: ");
+  Serial.println(resistanceValue);
+  Serial.print("Voltage at Node D: ");
+  Serial.println(voltageOutput);
+  Serial.print("Sensor Value: ");
+  Serial.println(input);
+  Serial.println();
+
+  delay(700);
+
+  // Conversion from float to string
+  String payload = String(resistanceValue, 0);
+
+  // Send the data to Flutter App
+  webSocket.broadcastTXT(payload);
 }
 
-void resistanceRange200000() {
-    digitalWrite(MUX_C, LOW);
-    digitalWrite(MUX_B, HIGH);
-    digitalWrite(MUX_A, LOW);
-    
-    digitalWrite(RMUX_C, LOW);
-    digitalWrite(RMUX_B, HIGH);
-    digitalWrite(RMUX_A, HIGH);
+// Function for Resistance Circuit: Range of 2,000 Ohms
+void resistancer2Function() {
+  digitalWrite(MUX_C, LOW);
+  digitalWrite(MUX_B, LOW);
+  digitalWrite(MUX_A, HIGH);
+
+  digitalWrite(RMUX_C, LOW);
+  digitalWrite(RMUX_B, LOW);
+  digitalWrite(RMUX_A, HIGH);
+
+  input = analogRead(analogInPin);
+
+  // Voltage at node D from Wheatstone Bridge
+  voltageOutput = input * (3.3 / 1023.0);
+
+  // Value of R4 calculated
+  resistanceValue = (voltageOutput * 1800) / (3.3 - voltageOutput);
+  
+  Serial.print("Missing Resistor Value: ");
+  Serial.println(resistanceValue);
+  Serial.print("Voltage at Node D: ");
+  Serial.println(voltageOutput);
+  Serial.print("Sensor Value: ");
+  Serial.println(input);
+  Serial.println();
+
+  delay(700);
+
+  // Conversion from float to string
+  String payload = String(resistanceValue, 0);
+
+  // Send the data to Flutter App
+  webSocket.broadcastTXT(payload);
 }
 
-void resistanceRange2000000() {
-    digitalWrite(MUX_C, LOW);
-    digitalWrite(MUX_B, HIGH);
-    digitalWrite(MUX_A, LOW);
-    
-    digitalWrite(RMUX_C, HIGH);
-    digitalWrite(RMUX_B, LOW);
-    digitalWrite(RMUX_A, LOW);
+// Function for Resistance Circuit: Range of 20,000 Ohms
+void resistancer3Function() {
+  digitalWrite(MUX_C, LOW);
+  digitalWrite(MUX_B, LOW);
+  digitalWrite(MUX_A, HIGH);
+
+  digitalWrite(RMUX_C, LOW);
+  digitalWrite(RMUX_B, HIGH);
+  digitalWrite(RMUX_A, LOW);
+
+  input = analogRead(analogInPin);
+
+  // Voltage at node D from Wheatstone Bridge
+  voltageOutput = input * (3.3 / 1023.0);
+
+  // Value of R4 calculated
+  resistanceValue = (voltageOutput * 17745) / (3.3 - voltageOutput);
+  
+  Serial.print("Missing Resistor Value: ");
+  Serial.println(resistanceValue);
+  Serial.print("Voltage at Node D: ");
+  Serial.println(voltageOutput);
+  Serial.print("Sensor Value: ");
+  Serial.println(input);
+  Serial.println();
+
+  delay(700);
+
+  // Conversion from float to string
+  String payload = String(resistanceValue, 0);
+
+  // Send the data to Flutter App
+  webSocket.broadcastTXT(payload);
 }
 
+// Function for Resistance Circuit: Range of 200,000 Ohms
+void resistancer4Function() {
+  digitalWrite(MUX_C, LOW);
+  digitalWrite(MUX_B, LOW);
+  digitalWrite(MUX_A, HIGH);
+
+  digitalWrite(RMUX_C, LOW);
+  digitalWrite(RMUX_B, HIGH);
+  digitalWrite(RMUX_A, HIGH);
+
+  input = analogRead(analogInPin);
+
+  // Voltage at node D from Wheatstone Bridge
+  voltageOutput = input * (3.3 / 1023.0);
+
+  // Value of R4 calculated
+  resistanceValue = (voltageOutput * 200000) / (3.3 - voltageOutput);
+  
+  Serial.print("Missing Resistor Value: ");
+  Serial.println(resistanceValue);
+  Serial.print("Voltage at Node D: ");
+  Serial.println(voltageOutput);
+  Serial.print("Sensor Value: ");
+  Serial.println(input);
+  Serial.println();
+
+  delay(700);
+
+  // Conversion from float to string
+  String payload = String(resistanceValue, 0);
+
+  // Send the data to Flutter App
+  webSocket.broadcastTXT(payload);
+}
+
+// Function for Resistance Circuit: Range of 2,000,000 Ohms
+void resistancer5Function() {
+  digitalWrite(MUX_C, LOW);
+  digitalWrite(MUX_B, LOW);
+  digitalWrite(MUX_A, HIGH);
+
+  digitalWrite(RMUX_C, HIGH);
+  digitalWrite(RMUX_B, LOW);
+  digitalWrite(RMUX_A, LOW);
+
+  input = analogRead(analogInPin);
+
+  // Voltage at node D from Wheatstone Bridge
+  voltageOutput = input * (3.3 / 1023.0);
+
+  // Value of R4 calculated
+  resistanceValue = (voltageOutput * 2000000) / (3.3 - voltageOutput);
+  
+  Serial.print("Missing Resistor Value: ");
+  Serial.println(resistanceValue);
+  Serial.print("Voltage at Node D: ");
+  Serial.println(voltageOutput);
+  Serial.print("Sensor Value: ");
+  Serial.println(input);
+  Serial.println();
+
+  delay(700);
+
+  // Conversion from float to string
+  String payload = String(resistanceValue, 0);
+
+  // Send the data to Flutter App
+  webSocket.broadcastTXT(payload);
+}
+
+// Function for setting up the WebSocket
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
-  String cmd = "";
+  String cmd;
   switch(type) {
     case WStype_DISCONNECTED:
         Serial.println("Websocket is not connected");
@@ -115,6 +275,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
           cmd = cmd + (char)payload[i];
         }
         Serial.println(cmd);
+        operation = cmd;
 
         if (cmd == "readdata"){
         }
@@ -133,28 +294,20 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
   }
 }
 
-String charactersToString(char* chr) {
-  String rval;
-  for(int x = 0; x < strlen(chr); x++) {
-    rval = rval + chr[x];
-  }
-  return rval;
-}
-
 void setup() {
 
-  // Defining GPIO pins for Resistance MUX
+  // GPIO pins for Props and Output MUX
   pinMode(MUX_C, OUTPUT);
   pinMode(MUX_B, OUTPUT);
   pinMode(MUX_A, OUTPUT);
 
+  // GPIO pins for Resistance Ranges MUX
   pinMode(RMUX_C, OUTPUT);
   pinMode(RMUX_B, OUTPUT);
   pinMode(RMUX_A, OUTPUT);
   
   // Creating the connection of WebSocket; this code runs only once
   Serial.begin(115200);
-
   Serial.println("Connecting to WiFi");
 
   IPAddress apIP(192, 168, 0, 1);
@@ -164,187 +317,35 @@ void setup() {
   webSocket.begin();
   webSocket.onEvent(webSocketEvent);
   Serial.println("WebSocket is started");
+
+  server.on("/", []() {
+        // send index.html
+        server.send(200, "text/html", "<html><head><script>var connection = new WebSocket('ws://'+location.hostname+':81/', ['arduino']);connection.onopen = function () {  connection.send('Connect ' + new Date()); }; connection.onerror = function (error) {    console.log('WebSocket Error ', error);};connection.onmessage = function (e) {  console.log('Server: ', e.data);};function sendRGB() {  var r = parseInt(document.getElementById('r').value).toString(16);  var g = parseInt(document.getElementById('g').value).toString(16);  var b = parseInt(document.getElementById('b').value).toString(16);  if(r.length < 2) { r = '0' + r; }   if(g.length < 2) { g = '0' + g; }   if(b.length < 2) { b = '0' + b; }   var rgb = '#'+r+g+b;    console.log('RGB: ' + rgb); connection.send(rgb); }</script></head><body>LED Control:<br/><br/>R: <input id=\"r\" type=\"range\" min=\"0\" max=\"255\" step=\"1\" oninput=\"sendRGB();\" /><br/>G: <input id=\"g\" type=\"range\" min=\"0\" max=\"255\" step=\"1\" oninput=\"sendRGB();\" /><br/>B: <input id=\"b\" type=\"range\" min=\"0\" max=\"255\" step=\"1\" oninput=\"sendRGB();\" /><br/></body></html>");
+  });
+
+  server.begin();
 }
 
 void loop() {
 
-  // Operations and send json packages to flutter app
+  // WebSocket started + retrieving from client
   webSocket.loop();
+  server.handleClient();
 
-  digitalWrite(MUX_C, LOW);
-  digitalWrite(MUX_B, HIGH);
-  digitalWrite(MUX_A, LOW);
-
-  input = analogRead(analogInPin);
-  Serial.print("Sensor: ");
-  Serial.println(input);
-
-  // Voltage Calculations
-  voltageValue = input * (3.3 / 1023.0);
-
-  voltageValue = (voltageValue * 1) / 3.3;
-
-  Serial.print("current: ");
-  Serial.println(voltageValue);
-  
-  delay(1000);
-
-  /*for(int i = 0; i < 5; i++) {
-    int range = ranges[0][i];
-    switch(range){
-      // Case for the 220 ohms range
-      case 220:
-        
-        // Selecting the range on MUX
-        resistanceRange220();
-        
-        // Voltage at node D from Wheatstone Bridge
-        voltageOutput = input * (3.3 / 1023.0);
-        
-        // Storing the voltage at node D in an array
-        ranges[1][0] = voltageOutput;
-
-        // Value of R4 calculated
-        resistanceValue = (voltageOutput * 220) / (3.3 - voltageOutput);
-        res220 = resistanceValue;
-
-        Serial.print("This is 220 ohms range: ");
-        Serial.println(resistanceValue);
-        Serial.print("Voltage at Node D for 220 ohms range: ");
-        Serial.println(voltageOutput);
-        Serial.print("Sensor Value from Analogue Pin = ");
-        Serial.println(input);
-        Serial.println();
-        break;
-
-      // Case for the 2,000 ohms range
-      case 2000:
-        // Selecting the range on MUX
-        resistanceRange2000();
-
-        // Analog read from pin A0
-        //input = analogRead(analogInPin);
-        
-        // Voltage at node D from Wheatstone Bridge
-        voltageOutput = input * (3.3 / 1023.0);
-
-        // Storing the voltage at node D in an array
-        ranges[1][1] = voltageOutput;
-
-        // Value of R4 calculated
-        resistanceValue = (voltageOutput * 2000) / (3.3 - voltageOutput);
-        res2000 = resistanceValue;
-
-        Serial.print("This is 2,000 ohms range: ");
-        Serial.println(resistanceValue);
-        Serial.print("Voltage at Node D for 2,000 ohms range: ");
-        Serial.println(voltageOutput);
-        Serial.print("Sensor Value from Analogue Pin = ");
-        Serial.println(input);
-        Serial.println();
-        break;
-
-      // Case for the 20,000 ohms range
-      case 20000:
-        // Selecting the range on MUX
-        resistanceRange20000();
-
-        // Analog read from pin A0
-        //input = analogRead(analogInPin);
-        
-        // Voltage at node D from Wheatstone Bridge
-        voltageOutput = input * (3.3 / 1023.0);
-
-        // Storing the voltage at node D in an array
-        ranges[1][2] = voltageOutput;
-
-        // Value of R4 calculated
-        resistanceValue = (voltageOutput * 20000) / (3.3 - voltageOutput);
-        res20000 = resistanceValue;
-        
-        Serial.print("This is 20,000 ohms range: ");
-        Serial.println(resistanceValue);
-        Serial.print("Voltage at Node D for 20,000 ohms range: ");
-        Serial.println(voltageOutput);
-        Serial.print("Sensor Value from Analogue Pin = ");
-        Serial.println(input);
-        Serial.println();
-        break;
-
-      // Case for the 200,000 ohms range
-      case 200000:
-        // Selecting the range on MUX
-        resistanceRange200000();
-
-        // Analog read from pin A0
-        //input = analogRead(analogInPin);
-        
-        // Voltage at node D from Wheatstone Bridge
-        voltageOutput = input * (3.3 / 1023.0);
-
-        // Storing the voltage at node D in an array
-        ranges[1][3] = voltageOutput;
-
-        // Value of R4 calculated
-        resistanceValue = (voltageOutput * 200000) / (3.3 - voltageOutput);
-        res200000 = resistanceValue;
-
-        Serial.print("This is 200,000 ohms range: ");
-        Serial.println(resistanceValue);
-        Serial.print("Voltage at Node D for 200,000 ohms range: ");
-        Serial.println(voltageOutput);
-        Serial.print("Sensor Value from Analogue Pin = ");
-        Serial.println(input);
-        Serial.println();
-        break;
-
-      // Case for the 2,000,000 ohms range
-      case 2000000:
-        // Selecting the range on MUX
-        resistanceRange2000000();
-
-        // Analog read from pin A0
-        //input = analogRead(analogInPin);
-        
-        // Voltage at node D from Wheatstone Bridge
-        voltageOutput = input * (3.3 / 1023.0);
-
-        // Storing the voltage at node D in an array
-        ranges[1][4] = voltageOutput;
-
-        // Value of R4 calculated
-        resistanceValue = (voltageOutput * 2000000) / (3.3 - voltageOutput);
-        res2000000 = resistanceValue;
-
-        Serial.print("This is 2,000,000 ohms range: ");
-        Serial.println(resistanceValue);
-        Serial.print("Voltage at Node D for 2,000,000 ohms range: ");
-        Serial.println(voltageOutput);
-        Serial.print("Sensor Value from Analogue Pin = ");
-        Serial.println(input);
-        Serial.println();
-        break;
-      default:
-        //Serial.print("Out of Range!!");
-        break;
-    }
-  }*/
-  
-  if(isnan(input))
-  {
-    Serial.println(F("Failed to read voltage value"));
-    return;
-  } else {
-    sprintf(vtr, "%.3f", voltageValue);
-    sprintf(r1tr, "%.2f", res220);
-    sprintf(r2tr, "%.2f", res2000);
-    sprintf(r3tr, "%.2f", res20000);
-    sprintf(r4tr, "%.2f", res200000);
-    sprintf(r5tr, "%.2f", res2000000);
-    
-
-    json = "{'voltageValue':'" + charactersToString(vtr) + "','range220':'" + charactersToString(r1tr) + "','range2000':'" + charactersToString(r2tr) + "','range20000':'" + charactersToString(r3tr) + "','range200000':'" + charactersToString(r4tr) + "','range2000000':'" + charactersToString(r5tr) + "'}";
-    Serial.println(json);
-    webSocket.broadcastTXT(json);
+  // Selecting the button from Flutter App
+  if (operation == "voltage") {
+    voltageFunction();
+  } else if(operation == "current") {
+    currentFunction();
+  } else if(operation == "range220") {
+    resistancer1Function();
+  } else if(operation == "range2000") {
+    resistancer2Function();
+  } else if(operation == "range20000") {
+    resistancer3Function();
+  } else if(operation == "range200000") {
+    resistancer4Function();
+  } else if(operation == "range2000000") {
+    resistancer5Function();
   }
 }

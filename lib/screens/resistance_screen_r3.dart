@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'choose_measure.dart';
-import 'dart:convert';
 import 'package:web_socket_channel/io.dart';
 
 class ResistanceScreenR3 extends StatefulWidget {
@@ -9,8 +8,8 @@ class ResistanceScreenR3 extends StatefulWidget {
 }
 
 class _ResistanceScreenR3State extends State<ResistanceScreenR3> {
-  String range20000 = '';
-  double resistanceDisplay = 0;
+  String resistanceR3 = '';
+  double resistanceR3Display = 0;
 
   late IOWebSocketChannel channel;
   bool connected = false;
@@ -19,7 +18,9 @@ class _ResistanceScreenR3State extends State<ResistanceScreenR3> {
   @override
   void initState() {
     connected = false;
-    range20000 = "0";
+    resistanceR3 = "0";
+
+    // Connecting the WebSocket with ESP8266
     Future.delayed(Duration.zero, () async {
       channelconnect();
     });
@@ -30,31 +31,12 @@ class _ResistanceScreenR3State extends State<ResistanceScreenR3> {
   channelconnect() {
     try {
       channel = IOWebSocketChannel.connect("ws://192.168.0.1:81");
+      channel.sink.add("range20000");
       channel.stream.listen((message) {
         print(message);
         setState(() {
-          if (message == "connected") {
-            connected = true;
-          } else if (message.substring(0, 14) == "{'voltageValue") {
-            message = message.replaceAll(RegExp("'"), '"');
-            var jsondata = json.decode(message);
-            setState(() {
-              range20000 = jsondata["res20000"];
-              resistanceDisplay = double.parse(range20000);
-
-              if (resistanceDisplay > 0.0001) {
-                saveData = true;
-              } else {
-                saveData = false;
-              }
-            });
-          }
-
-          if (range20000 == "0") {
-            saveData = false;
-          } else {
-            saveData = true;
-          }
+          resistanceR3 = message;
+          resistanceR3Display = double.parse(resistanceR3);
         });
       }, onDone: () {
         print("Web Socket is closed");
@@ -79,7 +61,10 @@ class _ResistanceScreenR3State extends State<ResistanceScreenR3> {
           leading: IconButton(
               icon: Icon(Icons.arrow_back_ios_new,
                   color: Color(0xffbe1e1e), size: 18),
-              onPressed: () => Navigator.of(context).pop())),
+              onPressed: () {
+                channel.sink.add("empty");
+                Navigator.of(context).pop();
+              })),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -89,7 +74,7 @@ class _ResistanceScreenR3State extends State<ResistanceScreenR3> {
                     fontFamily: 'Bebas Neue',
                     fontSize: 36,
                     color: Color(0xffbe1e1e))),
-            Padding(padding: EdgeInsets.fromLTRB(0, 110, 0, 0)),
+            Padding(padding: EdgeInsets.fromLTRB(0, 60, 0, 0)),
             Container(
                 decoration: BoxDecoration(
                     color: Color(0xffc4c4c4),
@@ -106,10 +91,10 @@ class _ResistanceScreenR3State extends State<ResistanceScreenR3> {
                           children: <Widget>[
                             Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
                             // Placeholder
-                            Text("10.00",
+                            Text("$resistanceR3Display",
                                 style: TextStyle(
                                     fontFamily: 'Noto Sans',
-                                    fontSize: 72,
+                                    fontSize: 64,
                                     color: Color(0xff000000))),
                             Divider(
                                 thickness: 2,
@@ -157,6 +142,7 @@ class _ResistanceScreenR3State extends State<ResistanceScreenR3> {
                     textStyle:
                         TextStyle(fontFamily: 'Montserrat', fontSize: 14)),
                 onPressed: () {
+                  channel.sink.add("empty");
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => ChooseMeasure()));
                 }),

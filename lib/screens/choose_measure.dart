@@ -18,7 +18,7 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 10)),
+            Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 30)),
             Text(
               "MULTIMETER GLOVE",
               style: TextStyle(
@@ -26,7 +26,7 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
                   fontSize: 32,
                   color: Color(0xffbe1e1e)),
             ),
-            Padding(padding: EdgeInsets.fromLTRB(0, 70, 0, 0)),
+            Padding(padding: EdgeInsets.fromLTRB(0, 40, 0, 0)),
             Text("What you want to measure?",
                 style: TextStyle(
                     fontFamily: 'Montserrat',
@@ -83,7 +83,7 @@ class _ChooseMeasureState extends State<ChooseMeasure> {
             Divider(
                 thickness: 1.5,
                 color: Color(0xffbe1e1e),
-                height: 130,
+                height: 100,
                 indent: 30,
                 endIndent: 30),
             Text("Check your saved data:",

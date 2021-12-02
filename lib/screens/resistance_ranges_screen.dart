@@ -24,9 +24,8 @@ class _ChooseResistanceRangeState extends State<ChooseResistanceRange> {
               onPressed: () => Navigator.of(context).pop())),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 10)),
             Text(
               "Resistance Ranges",
               style: TextStyle(
@@ -34,14 +33,14 @@ class _ChooseResistanceRangeState extends State<ChooseResistanceRange> {
                   fontSize: 32,
                   color: Color(0xffbe1e1e)),
             ),
-            Padding(padding: EdgeInsets.fromLTRB(0, 70, 0, 0)),
+            Padding(padding: EdgeInsets.fromLTRB(0, 40, 0, 0)),
             Text("Choose the range for your resistance:",
                 style: TextStyle(
                     fontFamily: 'Montserrat',
                     fontWeight: FontWeight.w600,
-                    fontSize: 18,
+                    fontSize: 16,
                     color: Color(0xff000000))),
-            Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 0)),
+            Padding(padding: EdgeInsets.fromLTRB(0, 30, 0, 0)),
             ElevatedButton(
                 child: Text("220Ω"),
                 style: ElevatedButton.styleFrom(
@@ -126,7 +125,6 @@ class _ChooseResistanceRangeState extends State<ChooseResistanceRange> {
                       MaterialPageRoute(
                           builder: (context) => ResistanceScreenR5()));
                 }),
-            Padding(padding: EdgeInsets.fromLTRB(0, 160, 0, 0))
           ],
         ),
       ),
